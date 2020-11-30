@@ -55,7 +55,7 @@ ggplot(datos, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=Country)) +
   scale_fill_brewer(palette = "Pastel1") +  theme_void() +
   theme(legend.position = "none") +
   labs(caption = "Test Caption") + 
-  ggtitle("Test title")
+  ggtitle("Test title") 
 
 
 # Elegir Colores de forma manual / Choose colors manually
