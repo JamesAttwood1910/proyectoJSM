@@ -45,13 +45,15 @@ visas_otorgadas_2019 %>% select(SEXO, ACTIVIDAD) %>% count(ACTIVIDAD, SEXO) %>%
 
 # Calcular edad de inmigrantes 
 # En cual comuna de Santiago viven inmigrantes cubanos qe tienen una edad de menos de 50 años. 
+# Calculate age of immigrants 
+# In which borough do cuban immigrants who are less than 50 years old live
 
 visas_otorgadas_2019$date <- as.Date(visas_otorgadas_2019$NACIMIENTO) 
 y <- visas_otorgadas_2019 %>% select(PAÍS, COMUNA, PROVINCIA, ESTUDIOS, date)
 y$age <- as.numeric(difftime(as.Date(c("2019-12-31")), y$date, units = "weeks"))/52.25
 
 
-y %>% filter(PAÍS == "Cuba" & age <= 50) %>% group_by(PROVINCIA, COMUNA, ESTUDIOS) %>% tally() %>%
+y %>% filter(PAÍS == "Cuba" & age < 50) %>% group_by(PROVINCIA, COMUNA, ESTUDIOS) %>% tally() %>%
   
   filter(PROVINCIA == "Santiago") %>%
   
@@ -61,9 +63,11 @@ y %>% filter(PAÍS == "Cuba" & age <= 50) %>% group_by(PROVINCIA, COMUNA, ESTUDI
   
   facet_wrap(vars(COMUNA)) +
   
+  theme_minimal() +
+  
   coord_flip() +
   
-  labs(title = "Nivel de educación de inmigrantes cubanos con menos de 50 años",
+  labs(title = "Nivel educaciónal de inmigrantes cubanos con menos de 50 años",
        subtitle = "Son inmigrantes que llegaron a la provincia de Santiago en 2019",
        caption = "Fuente: Departament de Extranjería y Migración") +
   ylab("Numero de inmigrantes") +  xlab("Nivel de educación")
@@ -94,6 +98,8 @@ y %>% filter(PROVINCIA == "Santiago") %>% group_by(PAÍS, COMUNA) %>% tally() %>
   
   coord_flip() + 
   
+  theme_minimal() +
+  
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=1)) +
   
   scale_y_continuous(labels = comma_format(big.mark = ",")) + 
@@ -109,6 +115,8 @@ y %>% filter(PROVINCIA == "Santiago") %>% group_by(PAÍS, COMUNA) %>% tally() %>
 
 visas_otorgadas_2019$MES <- month(visas_otorgadas_2019$MES, label = T)
 
+Espanol <- c("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
+
 visas_otorgadas_2019 %>% filter(SEXO == "Masculino" & PAÍS == "Venezuela") %>%
   
   group_by(MES) %>% 
@@ -118,22 +126,21 @@ visas_otorgadas_2019 %>% filter(SEXO == "Masculino" & PAÍS == "Venezuela") %>%
     chr(MES)
   ) %>%
   
-  mutate(MES = factor(MES, levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))) %>%
-  
   ggplot() + 
   
   geom_bar(aes(x = MES, y = n), stat = "identity", fill = "#FF5733") + 
   
   coord_flip() + 
   
+  theme_minimal() +
+  
   scale_x_discrete(labels= Espanol) + 
   
   scale_y_continuous(labels = comma_format(big.mark = ",")) + 
   
-  labs(title = "Mes de llegada de inmigrantes Venezolanos en 2019",caption = "Fuente: Departament de Extranjería y Migración") +
+  labs(title = "Mes de llegada de inmigrantes Venezolanos en 2019", caption = "Fuente: Departament de Extranjería y Migración") +
   ylab("Mes") +  xlab("Numero de inmigrantes")
 
-Espanol <- c("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
 
 
 
@@ -145,28 +152,29 @@ Espanol <- c("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct
 # Grafico de linea para mostrar cantidad de llegadas a lo largo del año 2019
 # Line graph to show the number of arrivals throughout 2019
 
-f <- visas_otorgadas_2019 %>% mutate(test = case_when(MES == "Jan" ~ "1 Enero, 2019",
-                                                      MES == "Feb" ~ "1 Febrero, 2019",
-                                                      MES == "Mar" ~ "1 Marzo, 2019",
-                                                      MES == "Apr" ~ "1 Abril, 2019",
-                                                      MES == "May" ~ "1 Mayo, 2019",
-                                                      MES == "Jun" ~ "1 Junio, 2019",
-                                                      MES == "Jul" ~ "1 Julio, 2019",
-                                                      MES == "Aug" ~ "1 Agosto, 2019",
-                                                      MES == "Sep" ~ "1 Septiembre, 2019",
-                                                      MES == "Oct" ~ "1 Octubre, 2019",
-                                                      MES == "Nov" ~ "1 Noviembre, 2019",
+f <- visas_otorgadas_2019 %>% mutate(test = case_when(MES == "ene" ~ "1 Enero, 2019",
+                                                      MES == "feb" ~ "1 Febrero, 2019",
+                                                      MES == "mar" ~ "1 Marzo, 2019",
+                                                      MES == "abr" ~ "1 Abril, 2019",
+                                                      MES == "may" ~ "1 Mayo, 2019",
+                                                      MES == "J=jun" ~ "1 Junio, 2019",
+                                                      MES == "jul" ~ "1 Julio, 2019",
+                                                      MES == "ago" ~ "1 Agosto, 2019",
+                                                      MES == "sep" ~ "1 Septiembre, 2019",
+                                                      MES == "oct" ~ "1 Octubre, 2019",
+                                                      MES == "nov" ~ "1 Noviembre, 2019",
                                                       TRUE ~ "1 Diciembre, 2019")) 
 
 
 # variable para la fecha / date variable
 
 f$test <- as.Date(f$test, format = "%d %B, %Y")
+
 f$test
 
 # Manipulación de los datos adicional y trazar grafico / additional data manipulation and plot graph
 
-head(f)
+head(f$test)
 
 f.2 <- f %>% select(PAÍS, MES, test) %>% group_by(PAÍS, test) %>% count(PAÍS) %>% 
   
@@ -177,19 +185,21 @@ f.2 <- f %>% select(PAÍS, MES, test) %>% group_by(PAÍS, test) %>% count(PAÍS)
                                    PAÍS == "Bolivia" ~ "Bolivia",
                                    TRUE ~ "Otro")) 
 
-aggregate(n ~ País_Agrupado + test, data = f.2, "sum")  %>% ggplot() + 
+aggregate(n ~ País_Agrupado + test, data = f.2, "sum") %>%
+
+  ggplot() + 
   
-  geom_line(aes(x = test, y = n)) + 
+  geom_line(aes(x = test, y = n)) +
   
   facet_wrap(vars(País_Agrupado)) +
   
   theme_minimal() +
   
-  scale_x_date(date_breaks = "3 month", date_labels = "%B") + 
+  scale_x_date(date_breaks = "2 month", date_labels = "%B") + 
   
   scale_y_continuous(n.breaks = 6, labels = comma_format(big.mark = ",")) +
   
-  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=1)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
   
   labs(title = "Llegada mensual de inmigrantes en 2019",caption = "Fuente: Departament de Extranjería y Migración ") +
   ylab("Llegadas") +  xlab("") 
