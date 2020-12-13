@@ -2,6 +2,8 @@
 
 # En este ejemplo vamos a usar el paquete gt para crear una tabla. 
 
+# https://gt.rstudio.com/ 
+
 # Cargar paquetes 
 library(gt)
 library(dplyr)

@@ -3,14 +3,14 @@
 # En este script se expone como crear un piramide de poblacion para Chile. Se comparan las poblaciones 
 # inmigrantes, nativo, y total. Datos se descargan del census Chileno 2017 (Instituto Nacional de Estadistica)
 
-https://www.censo2017.cl/descargas/inmigracion/181122-caracteristicas-de-la-inmigracion-internacional-en-chile-censo-2017.xlsx
+#https://www.censo2017.cl/descargas/inmigracion/181122-caracteristicas-de-la-inmigracion-internacional-en-chile-censo-2017.xlsx
 
 # Grafico No3 contiene los datos usados. 
 
 # This script shows how to create a population pyramid for Chile. The inmigrant, native, and total populations are shown. 
 # The data is taken from the 2017 national census which is available with the below link an grafic No3.
 
-https://www.censo2017.cl/descargas/inmigracion/181122-caracteristicas-de-la-inmigracion-internacional-en-chile-censo-2017.xlsx
+#https://www.censo2017.cl/descargas/inmigracion/181122-caracteristicas-de-la-inmigracion-internacional-en-chile-censo-2017.xlsx
 
 
 # Paquetes / Packages
@@ -98,9 +98,9 @@ ggplot(d)+
   )+
   scale_x_discrete(breaks = seq(0,100,25),
                    labels = c(0,25,50,75,100)) +
-  labs(x='',y='Población (%)',
+  labs(x='Edad',y='Población (%)',
        title='Pirámide de población de Chile',
-       subtitle=paste('Total Población Chilena 2017', format(sum(d$Poblacion),big.mark=',')),
+       subtitle=paste('Total Población Chilena 2017: ', format(sum(d$Poblacion),big.mark=',')),
        caption='Fuente:  El Instituto Nacional de Estadísticas (INE)')+
   cowplot::theme_cowplot()+
   theme(axis.text.x=element_text(vjust=.5),
@@ -155,10 +155,13 @@ dgroups
 
 # Trazar de nuevo / graph again
 
-ggplot(dgroups %>% filter(!Age_grouped == "No_Inmigrantes")) +
+
+# Inmigrante vs total 
+
+ggplot(dgroups %>% filter(!Grupo_de_Poblacion == "No_Inmigrantes")) +
   geom_bar(aes(x=Age_grouped,y=PopPerc2,fill=Grupo_de_Poblacion),stat='identity') +
   coord_flip() + 
-  scale_fill_manual(name='',values=c('darkred','steelblue', 'orange'), labels = c("Inmigrante", "Nativo", "Total")) +
+  scale_fill_manual(name='',values=c('#054762','#EF3D14'), labels = c("Inmigrante", "Total")) +
   scale_y_continuous(breaks=seq(-20,20,5),
                      labels= c("-20%","-15%","-10%","-5%","0%","5%","10%", "15%", "20%")
   ) + 
@@ -173,3 +176,22 @@ ggplot(dgroups %>% filter(!Age_grouped == "No_Inmigrantes")) +
         legend.position = 'top',
         legend.justification = 'center') 
 
+#Inmigrante vs Nativo
+
+ggplot(dgroups %>% filter(!Grupo_de_Poblacion == "Poblacion_total")) +
+  geom_bar(aes(x=Age_grouped,y=PopPerc2,fill=Grupo_de_Poblacion),stat='identity') +
+  coord_flip() + 
+  scale_fill_manual(name='',values=c('#16C3CE','#ffc100'), labels = c("Inmigrante", "Nativo")) +
+  scale_y_continuous(breaks=seq(-20,20,5),
+                     labels= c("-20%","-15%","-10%","-5%","0%","5%","10%", "15%", "20%")
+  ) + 
+  labs(x='',y='Población (%)',
+       title='Pirámide de población de Chile',
+       subtitle=paste('Total Población Chilena 2017:', format(sum(d$Poblacion),big.mark=',')),
+       caption='Fuente:  El Instituto Nacional de Estadísticas (INE)'
+  )+
+  theme_minimal() +
+  theme(axis.text.x=element_text(vjust=.5),
+        panel.grid.major.y = element_line(color='lightgray',linetype='dashed'),
+        legend.position = 'top',
+        legend.justification = 'center') 
